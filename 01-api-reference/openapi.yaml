@@ -1,0 +1,162 @@
+openapi: 3.0.3
+info:
+  title: Print Queue API (sample)
+  version: 1.0.0
+  description: >
+    A fictional REST API for submitting and managing print jobs.
+    This specification is a documentation sample and does not describe a real product.
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Local development server
+paths:
+  /jobs:
+    post:
+      summary: Create a print job
+      operationId: createJob
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobCreate'
+            example:
+              file_name: report.pdf
+              copies: 2
+              color: false
+      responses:
+        '201':
+          description: The job was created and queued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+    get:
+      summary: List print jobs
+      operationId: listJobs
+      responses:
+        '200':
+          description: All jobs, oldest first.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+  /jobs/{job_id}:
+    parameters:
+      - name: job_id
+        in: path
+        required: true
+        description: The job ID, for example `job_1`.
+        schema:
+          type: string
+    get:
+      summary: Get a print job
+      operationId: getJob
+      responses:
+        '200':
+          description: The requested job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Cancel a print job
+      operationId: cancelJob
+      description: Cancels a job that is still queued. A job that is printing or finished cannot be cancelled.
+      responses:
+        '204':
+          description: The job was cancelled. The response has no body.
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: The job can no longer be cancelled.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: job_not_cancellable
+                  message: Job job_1 has status 'printing' and cannot be cancelled.
+components:
+  schemas:
+    JobCreate:
+      type: object
+      required: [file_name]
+      properties:
+        file_name:
+          type: string
+          description: Name of the file to print.
+          example: report.pdf
+        copies:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 1
+          description: Number of copies.
+        color:
+          type: boolean
+          default: false
+          description: Set to `true` for color printing.
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+          example: job_1
+        file_name:
+          type: string
+          example: report.pdf
+        copies:
+          type: integer
+          example: 2
+        color:
+          type: boolean
+          example: false
+        status:
+          type: string
+          enum: [queued, printing, completed, cancelled]
+          example: queued
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-01-15T09:30:00+00:00'
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+  responses:
+    InvalidRequest:
+      description: The request body is missing or contains an invalid value.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: invalid_request
+              message: copies must be an integer from 1 to 50.
+    NotFound:
+      description: No job exists with that ID.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: job_not_found
+              message: No job with ID job_99 exists.
