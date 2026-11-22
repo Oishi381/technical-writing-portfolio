@@ -1,13 +1,13 @@
 # Quickstart: Run the Print Queue API with Flask
 
-> **Sample note:** The Print Queue API is fictional. This tutorial is a documentation sample. All code in this folder was run and tested.
+> *Sample note:* The Print Queue API is fictional. This tutorial is a documentation sample. All code in this folder was run and tested.
 
-**Audience:** Developers who know basic Python and want to try the API on their own computer.
-**Time:** About 10 minutes.
+*Audience:* Developers who know basic Python and want to try the API on their own computer.
+*Time:* About 10 minutes.
 
 In this quickstart, you start a local Flask server that implements the [Print Queue API](../01-api-reference/README.md), then create, check, and cancel a print job.
 
-## Before you begin
+# Before you begin
 
 You need:
 
@@ -15,7 +15,7 @@ You need:
 - `pip`, the Python package installer.
 - `curl`, or another tool for sending HTTP requests.
 
-## Step 1: Set up the project
+# Step 1: Set up the project
 
 1. Open a terminal and go to this folder:
 
@@ -38,7 +38,7 @@ You need:
    pip install -r requirements.txt
    ```
 
-## Step 2: Start the server
+# Step 2: Start the server
 
 Run the application:
 
@@ -48,7 +48,7 @@ python app.py
 
 The terminal shows that the server is running at `http://127.0.0.1:5000`. Leave this terminal open and use a second terminal for the remaining steps.
 
-## Step 3: Create a print job
+# Step 3: Create a print job
 
 Send a `POST` request to create a job:
 
@@ -73,7 +73,7 @@ The server responds with the new job. Its status is `queued`:
 
 Your `created_at` value will be different. Note the `id`. You use it in the next steps.
 
-## Step 4: Check the job
+# Step 4: Check the job
 
 Replace `job_1` with your job ID if it is different:
 
@@ -83,7 +83,7 @@ curl http://localhost:5000/api/v1/jobs/job_1
 
 The server returns the same job object.
 
-## Step 5: Cancel the job
+# Step 5: Cancel the job
 
 ```bash
 curl -i -X DELETE http://localhost:5000/api/v1/jobs/job_1
@@ -97,7 +97,7 @@ Check the job again. Its status is now `cancelled`:
 curl http://localhost:5000/api/v1/jobs/job_1
 ```
 
-## Step 6: See an error response
+# Step 6: See an error response
 
 Try to create a job with an invalid number of copies:
 
@@ -118,7 +118,7 @@ The server returns a `400` error:
 }
 ```
 
-## Troubleshooting
+# Troubleshooting
 
 | Problem | Cause and solution |
 |---------|--------------------|
@@ -126,12 +126,9 @@ The server returns a `400` error:
 | `command not found: python3` | Python is not installed or is not on your PATH. On Windows, try `python` instead of `python3`. |
 | `404 job_not_found` | The job ID does not exist. Jobs are stored in memory and are lost when you stop the server. |
 
-## Next steps
+# Next steps
 
 - Read the full [API reference](../01-api-reference/README.md).
 - Open [`app.py`](app.py) and read how each endpoint validates input.
 - Add a new field, such as `duplex`, and update the reference to match.
 
----
-
-*Authoring note: [Add your own note here. For example: "I ran every command on my own computer and corrected the expected output. An AI assistant helped draft the first version."]*
